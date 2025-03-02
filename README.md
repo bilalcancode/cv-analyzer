@@ -6,6 +6,7 @@ CV Analyzer is a Django-based web application designed to process and analyze CV
 
 - [Features](#features)
 - [Technology Stack](#technology-stack)
+- [System Dependencies](#system-dependencies)
 - [Setup and Installation](#setup-and-installation)
 - [Environment Variables](#environment-variables)
 - [Usage](#usage)
@@ -44,6 +45,18 @@ CV Analyzer is a Django-based web application designed to process and analyze CV
 - **LLM Integration:** OpenAI GPT-4
 - **Other Tools:** python-dotenv for environment variable management
 
+## System Dependencies
+
+- **Tesseract OCR**
+  ```
+  sudo apt-get update
+  sudo apt-get install tesseract-ocr
+- **Poppler**
+  ```
+  sudo apt-get install poppler-utils
+- **antiword** 
+  ```
+  sudo apt-get install antiword
 ## Setup and Installation
 
 1. **Clone the Repository:**

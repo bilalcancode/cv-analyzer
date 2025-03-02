@@ -1,6 +1,7 @@
 import os
 
 import pytesseract
+import textract  # New dependency for .doc files
 from docx import Document
 from pdf2image import convert_from_path
 
@@ -34,6 +35,18 @@ def extract_text_from_docx(file_path):
     return text
 
 
+def extract_text_from_doc(file_path):
+    """
+    Extract text from a .doc file using textract.
+    """
+    try:
+        text = textract.process(file_path)
+        # Decode bytes to string if necessary.
+        return text.decode("utf-8") if isinstance(text, bytes) else text
+    except Exception as e:
+        raise Exception(f"Error processing DOC: {e}")
+
+
 def extract_text(file_path):
     """
     Determine the file type and extract text accordingly.
@@ -41,8 +54,9 @@ def extract_text(file_path):
     ext = os.path.splitext(file_path)[1].lower()
     if ext == ".pdf":
         return extract_text_from_pdf(file_path)
-    elif ext in [".docx", ".doc"]:
-        # Note: python-docx primarily supports .docx. For .doc files, additional handling might be needed.
+    elif ext == ".docx":
         return extract_text_from_docx(file_path)
+    elif ext == ".doc":
+        return extract_text_from_doc(file_path)
     else:
         raise ValueError("Unsupported file extension for OCR extraction")

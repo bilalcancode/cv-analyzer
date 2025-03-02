@@ -48,6 +48,5 @@ def parse_cv_with_gpt(text):
         parsed = json.loads(output)
         return parsed
     except Exception as e:
-        # Handle API errors or JSON parsing errors
         print(f"Error during GPT-4 parsing: {e}")
-        return None
+        raise Exception(f"Error during GPT-4 parsing: {e}")

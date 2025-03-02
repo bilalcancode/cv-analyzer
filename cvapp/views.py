@@ -19,7 +19,7 @@ def upload_cv(request):
             messages.error(request, "No files were selected.")
             return redirect("upload_cv")
 
-        aggregated_texts = []  # To store the extracted text from each file
+        aggregated_texts = []
         aggregated_json = []
 
         for file in files:
@@ -27,11 +27,12 @@ def upload_cv(request):
             if ext.lower() not in valid_extensions:
                 messages.error(
                     request,
-                    f"Unsupported file extension for file {file.name}. Skipping this file.",
+                    f"Unsupported file extension for file {file.name}.",
                 )
-                continue
+                return render(
+                    request, "cvapp/upload_cv.html", {"form": CVDocumentForm()}
+                )
 
-            # Save the file
             cv_doc = CVDocument.objects.create(file=file)
             try:
                 # Extract text from the file using OCR or native parsing
@@ -47,8 +48,11 @@ def upload_cv(request):
                 aggregated_json.append(parsed)
             except Exception as e:
                 messages.error(request, f"Error processing file {file.name}: {e}")
+                return render(
+                    request, "cvapp/upload_cv.html", {"form": CVDocumentForm()}
+                )
 
-        # Join all extracted texts with a separator (adjust as needed)
+        # Join all extracted texts with a separator
         aggregated_text = "\n\n####\n\n".join(aggregated_texts)
 
         # Store the aggregated text in session for use in the chatbot system prompt
@@ -57,7 +61,7 @@ def upload_cv(request):
         # Store the aggregated json in session to present the summary
         request.session["cv_parsed_data"] = aggregated_json
 
-        # (Optional) Reset conversation history if needed
+        # Reset conversation history if needed
         request.session["conversation_history"] = []
 
         return redirect("cv_summary")

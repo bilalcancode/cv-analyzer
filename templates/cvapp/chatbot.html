@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  /* Container for the entire chat section */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 70vh; /* Adjust as desired */
+  }
+
+  /* The chat window area where messages appear */
+  #chat-window {
+    background-color: #343541; /* Dark background, typical of ChatGPT */
+    color: #fff;
+    border-radius: 6px;
+    padding: 20px;
+    flex: 1; /* Fill remaining vertical space */
+    overflow-y: auto; /* Scroll if content overflows */
+    margin-bottom: 20px;
+  }
+
+  /* Common styles for both user and assistant messages */
+  .message {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    line-height: 1.4;
+    clear: both; /* Ensure each message starts on a new line */
+  }
+
+  /* User messages (on the right) */
+  .message-user {
+    background-color: #0b7285; /* A teal-like color for user bubble */
+    float: right;
+    text-align: right;
+  }
+
+  /* Assistant messages (on the left) */
+  .message-assistant {
+    background-color: #40414F; /* Slightly lighter/darker gray for assistant bubble */
+    float: left;
+    text-align: left;
+  }
+
+  /* Input area styling */
+  .input-area {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Inline spinner styling next to the send button */
+  #inlineSpinner {
+    display: none;
+  }
+</style>
+
+<h3 class="mb-4">CV Query Chatbot</h3>
+
+<div class="chat-container">
+  <!-- Chat Window -->
+  <div id="chat-window">
+    {% for message in conversation %}
+      {% if message.role == "user" %}
+        <div class="message message-user">
+          {{ message.content }}
+        </div>
+      {% else %}
+        <div class="message message-assistant">
+          {{ message.content }}
+        </div>
+      {% endif %}
+    {% empty %}
+      <div class="message message-assistant">
+        <p>No conversation yet. Ask your question about CVs!</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- User Input Form with inline spinner -->
+  <form id="chatForm" method="post" class="input-area">
+    {% csrf_token %}
+    <input type="text" name="message" class="form-control" placeholder="Ask about the CV data..." required />
+    <button type="submit" class="btn btn-primary">Send</button>
+    <!-- Inline spinner (small) -->
+    <div id="inlineSpinner" class="spinner-border spinner-border-sm text-primary ms-2" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </form>
+
+  <!-- Clear Conversation Button -->
+  <form method="post" action="{% url 'clear_chat' %}" class="mt-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+      Clear Conversation
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const chatWindow = document.getElementById("chat-window");
+    const chatForm = document.getElementById("chatForm");
+    const inlineSpinner = document.getElementById("inlineSpinner");
+
+    // Auto-scroll function: scrolls the chat window to the bottom
+    function scrollChatToBottom() {
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Auto-scroll on page load
+    scrollChatToBottom();
+
+    // When the form is submitted, show the inline spinner
+    chatForm.addEventListener("submit", function() {
+      inlineSpinner.style.display = "inline-block";
+    });
+  });
+</script>
+{% endblock %}

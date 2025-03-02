@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="mb-0">CV Parsed Data Summary</h3>
+  <!-- Top-right button -->
+  <a href="{% url 'chatbot' %}" class="btn btn-primary">
+    Chat with bot about data
+  </a>
+</div>
+
+{% if cv_parsed_data %}
+  {% for item in cv_parsed_data %}
+    <div class="card mb-3 bg-dark border-light shadow">
+      <div class="card-header">
+        <!-- Display the candidate's name from the parsed data, or "Unknown" if not found -->
+        Parsed CV Data for {{ item.raw.personal_info.name|default:"Unknown" }}
+      </div>
+      <div class="card-body">
+        <pre class="text-white">{{ item.pretty_json }}</pre>
+      </div>
+    </div>
+  {% endfor %}
+  <!-- Bottom row with button on the right (after all CV data) -->
+  <div class="d-flex justify-content-center mt-4">
+    <a href="{% url 'chatbot' %}" class="btn btn-primary w-100">
+      Chat with bot about data
+    </a>
+  </div>
+{% else %}
+  <p>No CV data available.</p>
+{% endif %}
+{% endblock %}
